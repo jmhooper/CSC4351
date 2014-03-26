@@ -46,32 +46,6 @@ Yylex(java.io.InputStream s, ErrorMsg e) {
 
 
 %%
-
-<YYINITIAL> "," { return (new Yytoken(0,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> ":" { return (new Yytoken(1,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> ";" { return (new Yytoken(2,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "(" { return (new Yytoken(3,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> ")" { return (new Yytoken(4,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "[" { return (new Yytoken(5,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "]" { return (new Yytoken(6,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "{" { return (new Yytoken(7,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "}" { return (new Yytoken(8,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "." { return (new Yytoken(9,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "+" { return (new Yytoken(10,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "-" { return (new Yytoken(11,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "*" { return (new Yytoken(12,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "/" { return (new Yytoken(13,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "=" { return (new Yytoken(14,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "<>" { return (new Yytoken(15,yytext(),yyline,yychar,yychar+2)); }
-<YYINITIAL> "<"  { return (new Yytoken(16,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "<=" { return (new Yytoken(17,yytext(),yyline,yychar,yychar+2)); }
-<YYINITIAL> ">"  { return (new Yytoken(18,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> ">=" { return (new Yytoken(19,yytext(),yyline,yychar,yychar+2)); }
-<YYINITIAL> "&"  { return (new Yytoken(20,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "|"  { return (new Yytoken(21,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> ":=" { return (new Yytoken(22,yytext(),yyline,yychar,yychar+2)); }
-
-
 " "	{}
 \n	{newline();}
 ","	{return tok(sym.COMMA, null);}
