@@ -5,4 +5,5 @@ CS4351/*
 
 # Ignore generated files
 *.class
+*.tig
 Yylex.java
