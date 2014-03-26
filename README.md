@@ -8,26 +8,26 @@ To get started, move to the directory you wish to work on, set the environment f
 
 For example, to build project 1:
 
-1. Move into the projects directory
+##### Move into the projects directory
 
 ```bash
 cd prog1
 ```
 
-2. Setup the environment file
+##### Setup the environment file
 
 ```bash
 cp example.env .env
 vim .env
 ```
 
-3. Load the profile
+##### Load the profile
 
 ```bash
 source .profile
 ```
 
-4. Build and run the project
+##### Build and run the project
 
 ```bash
 make
