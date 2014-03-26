@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# Function for downloading files from the classes server
+function download_files {
+  # Clean up any old files that may be present
+  if [ ! -d ./CS4351 ]; then rm -rf ./CS4351; fi
+  
+  # Use scp to download the files
+  scp -r ${LSUUSERNAME}@${LSUSERVER}:/classes/cs4351/cs4351_bau/pub ./CS4351
+}
+
+# Function with a decision contruct for downloading files from the classes server
+function download_files_if_needed {
+  # Loop until the input is valid
+  local valid_input=0
+  while [ $valid_input -eq 0 ]; do
+    read should_download
+    if [ "$should_download" = "Y" ]; then
+      echo "Okay, re-downloading the CS4351 directory."
+      download_files
+      valid_input=1
+    elif [ "$should_download" = "n" ]; then
+      echo "Okay, the CS4351 directory will not be re-downloaded."
+      valid_input=2
+    else
+      echo "Please provide a valid input."
+      echo -n "Would you like to re-download the CS4351 directory from the LSU classes server? [Y/n] "
+    fi
+  done
+}
+
+# Create the environment file
+if [ ! -f ./.env ]; then
+  cp ./example.env ./.env
+  echo "An environment file was created at \".env\"."
+  echo "The environment will need to be configured."
+  vim ./.env
+else
+  echo "Already using an environment file at \".env\"."
+fi
+
+# Load the new environment file
+source .env
+
+# If the files from CS4351 haven't been copied from the server yet, do that
+if [ ! -d ./CS4351 ]; then
+  echo "No CS4351 directory was detected. One will be downloaded";
+  download_files
+else
+  # Just because the directory is here does not mean it is up to date.
+  # Provide the option of redownloading the directory.
+  echo -n "A CSC4351 directory is present, but it may be out of date. Would you like to re-download the files from LSU's classes server? [Y/n] "
+  download_files_if_needed
+fi
+
+echo "Done!"

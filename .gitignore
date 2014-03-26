@@ -1,2 +1,8 @@
+# Ignore environment files
 .env
-.class
+CS4351/
+CS4351/*
+
+# Ignore generated files
+*.class
+*.ylex
