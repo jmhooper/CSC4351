@@ -15,12 +15,20 @@ clone git@github.com:jmhooper/CSC4351.git
 
 After you run the setup script, you should have all the files you need to build the projects.
 
+### Environment
+
+After the setup script, you will still need to load the environment file for your current terminal session.
+If a rule for loading this file isn't added to your .bashrc, you will need to re-load this file every time you open the project in a new terminal window.
+
+```bash
+source .env
+```
+
 ### Aliases
 
 Some aliases for working with the projects are provided in the file named ".aliases". You can run `source .aliases` to load these aliases.
 
-If a command is not added to your .bashrc to load these aliases when your terminal is loaded,
-then you will have to re-load the aliases everytime you open the project in a new terminal window.
+If a rule for loading this file isn't added to your .bashrc you will have to re-load the aliases everytime you open the project in a new terminal window.
 
 ### Profiles
 
@@ -36,10 +44,6 @@ source .profile
 
 If you loaded the aliases file, then you can use the aliases to switch between project without having to set the profile.
 The alias `_prog1` can be used to load Project 1, `_prog2` for Project 2, and so on.
-
-```bash
-_prog1
-```
 
 ### Build and run the project
 
