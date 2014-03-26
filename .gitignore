@@ -5,4 +5,4 @@ CS4351/*
 
 # Ignore generated files
 *.class
-*.ylex
+Yylex.java
