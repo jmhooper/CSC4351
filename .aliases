@@ -1,7 +1,7 @@
 # Some aliases for changing to the project directories and loading their profiles
-source alias _prog1="cd ${PROGDIR}/prog1 && source .profile"
-source alias _prog2="cd ${PROGDIR}/prog2 && source .profile"
-source alias _prog3="cd ${PROGDIR}/prog3 && source .profile"
-source alias _prog4="cd ${PROGDIR}/prog4 && source .profile"
-source alias _prog5="cd ${PROGDIR}/prog5 && source .profile"
-source alias _prog6="cd ${PROGDIR}/prog6 && source .profile"
+source alias _prog1="cd $PROGDIR/prog1 && source .profile"
+source alias _prog2="cd $PROGDIR/prog2 && source .profile"
+source alias _prog3="cd $PROGDIR/prog3 && source .profile"
+source alias _prog4="cd $PROGDIR/prog4 && source .profile"
+source alias _prog5="cd $PROGDIR/prog5 && source .profile"
+source alias _prog6="cd $PROGDIR/prog6 && source .profile"
