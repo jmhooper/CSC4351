@@ -36,45 +36,11 @@ Yylex(java.io.InputStream s, ErrorMsg e) {
   errorMsg=e;
 }
 
-// Begin some custom methods
+// Begin some custom implementations
 
 private int nestedCommentCount = 0;
 
-private java_cup.runtime.Symbol escapeString(String inputString){
-  // Strip the outside quotations and replace escape characters
-  inputString = inputString.substring(1, inputString.length() - 1);
-  inputString = inputString.replaceAll("\\\\n", "\n").replaceAll("\\\\t", "\t").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\\"", "\"");
-  
-  /*// Take care of formatt escape
-  String outputString = "";
-  for (int i=0; i<inputString.length(); i++){
-    if (inputString.charAt(i) == '\"'){
-      // If we have an extra backslash, this is either a /f___f/ case or an error
-      i++;
-      // Loop through i for as long as it isn't a backslash
-      while(inputString.charAt(i) != '\"'){
-        // Throw an error for any characters that aren't allowed
-        if (!(inputString.charAt(i) == ' ' || inputString.charAt(i) == '\t' || inputString.charAt(i) == '\n' || inputString.charAt(i) == '\f')){
-          err("Illegal character in /f___f/: " + inputString.charAt(i));
-          return null;
-        }
-        // Throw an error if we go out of bounds
-        i++;
-        if (i >= inputString.length()) {
-          err("Illegal character in /f___f/: \\");
-          return null;
-        }
-      }
-      
-      err("Illegal character: \\");
-      return null;
-    }
-    
-    outputString+=inputString.charAt(i);
-  }*/
-  
-  return tok(sym.STRING, inputString);
-}
+private String string = "";
 
 %}
 
@@ -87,7 +53,10 @@ private java_cup.runtime.Symbol escapeString(String inputString){
 
 %state COMMENT
 %state STRING
+%state ESCAPEDSTRING
 %state FORMATSTRING
+  
+formattingCharacter=[\n\t" "\f\r]
 
 %%
 <YYINITIAL> " "	{}
@@ -150,6 +119,28 @@ private java_cup.runtime.Symbol escapeString(String inputString){
 <YYINITIAL> "|"	{ return tok(sym.OR, null); }
 <YYINITIAL> ":="	{ return tok(sym.ASSIGN, null); }
 
-<YYINITIAL> \".*\" { return escapeString(yytext()); }
+<YYINITIAL> \" { 
+  string = "";
+  yybegin(STRING);
+}
+<STRING> \" {
+  yybegin(YYINITIAL);
+  return tok(sym.STRING, string);
+}
+<STRING> \\ { yybegin(ESCAPEDSTRING); }
+<STRING> \n { err("Error parsing string: " + string + ". Expected '\"'");}
+<STRING> . { string += yytext(); }
+
+<ESCAPEDSTRING> n { string += "\n"; yybegin(STRING); }
+<ESCAPEDSTRING> t { string += "\t"; yybegin(STRING); }
+<ESCAPEDSTRING> \" { string += "\""; yybegin(STRING); }
+<ESCAPEDSTRING> \\ { string += "\\"; yybegin(STRING); }
+  
+<ESCAPEDSTRING> formattingCharacter { yybegin(FORMATSTRING); }
+<ESCAPEDSTRING> . { err("Unexpected character '" + yytext() + "' after '\\'."); }
+
+<FORMATSTRING> formattingCharacter {}
+<FORMATSTRING> \\ { yybegin(STRING); }
+<FORMATSTRING> . { err("Unexpected character '" + yytext() + "' after '\\'."); }
 
 . { err("Illegal character: " + yytext()); }
