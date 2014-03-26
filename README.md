@@ -8,32 +8,28 @@ To get started, move to the directory you wish to work on, set the environment f
 
 For example, to build project 1:
 
-- Move into the projects directory
+1. Move into the projects directory
 
-bash
-```
+```bash
 cd prog1
 ```
 
-- Setup the environment file
+2. Setup the environment file
 
-bash
-```
+```bash
 cp example.env .env
 vim .env
 ```
 
-- Load the profile
+3. Load the profile
 
-bash
-```
+```bash
 source .profile
 ```
 
-- Build and run the project
+4. Build and run the project
 
-bash
-```
+```bash
 make
 java Parse.Main test.tig
 ```
