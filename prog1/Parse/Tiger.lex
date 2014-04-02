@@ -54,9 +54,6 @@ private String string = "";
 %state COMMENT
 %state STRING
 %state ESCAPEDSTRING
-%state FORMATSTRING
-  
-formattingCharacter=[\n\t" "\f\r]
 
 %%
 <YYINITIAL> " "	{}
@@ -127,20 +124,14 @@ formattingCharacter=[\n\t" "\f\r]
   yybegin(YYINITIAL);
   return tok(sym.STRING, string);
 }
-<STRING> \\ { yybegin(ESCAPEDSTRING); }
 <STRING> \n { err("Error parsing string: " + string + ". Expected '\"'");}
+<STRING> \\ { yybegin(ESCAPEDSTRING); }
 <STRING> . { string += yytext(); }
 
 <ESCAPEDSTRING> n { string += "\n"; yybegin(STRING); }
 <ESCAPEDSTRING> t { string += "\t"; yybegin(STRING); }
 <ESCAPEDSTRING> \" { string += "\""; yybegin(STRING); }
 <ESCAPEDSTRING> \\ { string += "\\"; yybegin(STRING); }
-  
-<ESCAPEDSTRING> formattingCharacter { yybegin(FORMATSTRING); }
 <ESCAPEDSTRING> . { err("Unexpected character '" + yytext() + "' after '\\'."); }
-
-<FORMATSTRING> formattingCharacter {}
-<FORMATSTRING> \\ { yybegin(STRING); }
-<FORMATSTRING> . { err("Unexpected character '" + yytext() + "' after '\\'."); }
 
 . { err("Illegal character: " + yytext()); }

@@ -1,0 +1,7 @@
+This is poject 1.
+
+The lexical analyzer works great except for 1 shortcoming. It does escape the following patterns from strings:
+
+Control Characters:     \^c
+ASCII Codes:            \ddd
+Formatting Characters:  \f___f\ 
