@@ -3,7 +3,12 @@
 CS4351/
 CS4351/*
 
-# Ignore generated files
+# Ignore prog1 generated files
 *.class
 *.tig
 Yylex.java
+
+# Ignore prog2 generated files
+Grm.err
+Grm.out
+Grm.java

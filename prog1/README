@@ -1,4 +1,4 @@
-This is poject 1.
+This is poject 1 for for Jonathan Hooper and Franshetta Hibbler.
 
 The lexical analyzer works great except for 1 shortcoming. It does escape the following patterns from strings:
 
