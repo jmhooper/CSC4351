@@ -82,7 +82,18 @@ public class TransExp extends Trans {
   }
   
   ExpTy transExp(Absyn.AssignExp e){
-    return null;
+    // Get the variables type
+    ExpTy varExpType = transVar(e.var);
+    // Get the expressions type
+    ExpTy expExpType = transExp(e.exp);
+    
+    // Now check those types against each other
+    if (!varExpType.ty.coerceTo(expExpType.ty)){
+      error(e.pos, "assignment to variable of the wrong type");
+    }
+    
+    // Return
+    return new ExpTy(null, VOID);
   }
   
   ExpTy transExp(Absyn.BreakExp e){
@@ -91,31 +102,90 @@ public class TransExp extends Trans {
   
   ExpTy transExp(Absyn.CallExp e){
     // Load the function being called
-    Entry funEntry = (Entry)env.venv.get(e.func);
+    Entry entry = (Entry)env.venv.get(e.func);
     
     // Check that we are calling a function
-    if (funEntry == null || !(funEntry instanceof FunEntry)) {
+    if (entry == null || !(entry instanceof FunEntry)) {
       error(e.pos, "undefined function: " + e.func);
       return new ExpTy(null, VOID);
     }
     
-    // Finish implementing
+    // If we have a function entry, cast it as that
+    FunEntry funEntry = (FunEntry)entry;
     
-    /*if (x instanceof FunEntry) {
-      FunEntry f = (FunEntry)x;
-      transArgs(e.pos, f.formals, e.args);
-      return new ExpTy(null, f.result);
+    // Type check the arguments
+    Absyn.ExpList argument = e.args;
+    Types.RECORD record = funEntry.formals;
+    while (argument != null) {
+      // Check the arguments and the parameters
+      ExpTy argumentExpType = transExp(argument.head);
+      if (record == null) {
+        error(argument.head.pos, "too many arguments");
+      } else if (!argumentExpType.ty.coerceTo(record.fieldType)) {
+        error(argument.head.pos, "argument was of the wrong type");
+      }
+      
+      // Increment the arguments and the parameters
+      argument = argument.tail;
+      record = record.tail;
     }
-    error(e.pos, "undeclared function: " + e.func);
-    return new ExpTy(null, VOID);*/
+    
+    // If there are records left over there weren't enough arguments
+    if (record != null) {
+      error(e.pos, "not enough arguments");
+    }
+    
+    // Finally return
+    return new ExpTy(null, funEntry.result);
   }
   
   ExpTy transExp(Absyn.ForExp e){
-    return null;
+    // The var dec and the hi's type should be integer
+    ExpTy loExpTy = transExp(e.var.init);
+    ExpTy hiExpTy = transExp(e.hi);
+    
+    if (!(loExpTy.ty.coerceTo(INT) && hiExpTy.ty.coerceTo(INT))) {
+      error(e.pos, "for loop parameters should be of type int");
+    }
+    
+    // Begin a new scope for the for loop
+    env.venv.beginScope();
+    
+    // Translate the decs, and check the body
+    transDec(e.var);
+    ExpTy bodyExpTy = transExp(e.body);
+    
+    // The body should be of type VOID
+    if (!bodyExpTy.ty.coerceTo(VOID)) {
+      error(e.pos, "body of a while loop should not have a value");
+    }
+    
+    // End the scope
+    env.venv.endScope();
+    
+    // The for loop is of type void
+    return new ExpTy(null, VOID);
   }
   
   ExpTy transExp(Absyn.IfExp e){
-    return null;
+    // Check that the test is an int
+    ExpTy test = transExp(e.test);
+    checkInt(test, e.test.pos);
+    
+    // Check the then clause
+    ExpTy thenClause = transExp(e.thenclause);
+    
+    // If there is an else clause, process that
+    if (e.elseclause != null) {
+      ExpTy elseClause = transExp(e.elseclause);
+      if(!thenClause.ty.coerceTo(elseClause.ty)){
+        error(e.pos, "if statement then/else clauses do not match");
+      }
+      return thenClause;
+    }
+    
+    // If there is no else clause, return the then clause
+    return thenClause;
   }
   
   ExpTy transExp(Absyn.IntExp e){
@@ -144,8 +214,26 @@ public class TransExp extends Trans {
 
     switch (e.oper) {
     case Absyn.OpExp.PLUS:
+    case Absyn.OpExp.MINUS:
+    case Absyn.OpExp.MUL:
+    case Absyn.OpExp.DIV:
+      // check for arithmetic 
       checkInt(left, e.left.pos);
       checkInt(right, e.right.pos);
+      return new ExpTy(null, INT);
+    case Absyn.OpExp.EQ:
+    case Absyn.OpExp.NE:
+      // check comparable
+      checkComparable(left, e.left.pos);
+      checkComparable(right, e.right.pos);
+      return new ExpTy(null, INT);
+    case Absyn.OpExp.LT:
+    case Absyn.OpExp.GT:
+    case Absyn.OpExp.LE:
+    case Absyn.OpExp.GE: 
+      // check orderable
+      checkOrderable(left, e.left.pos);
+      checkOrderable(right, e.right.pos);
       return new ExpTy(null, INT);
     default:
       throw new Error("unknown operator");
@@ -190,7 +278,17 @@ public class TransExp extends Trans {
   }
   
   ExpTy transExp(Absyn.SeqExp e){
-    return null;
+    // Translate the type for this express
+    ExpTy expTy = transExp(e.list.head);
+    
+    // If there are no more expression, return this one
+    // If there are more expressions, return the next one
+    if (e.list.tail == null) {
+      return expTy;
+    } else {
+      return transExp(new Absyn.SeqExp(e.list.tail.head.pos, e.list.tail));
+    }
+    
   }
   
   ExpTy transExp(Absyn.StringExp e){
@@ -202,7 +300,20 @@ public class TransExp extends Trans {
   }
   
   ExpTy transExp(Absyn.WhileExp e){
-    return null;
+    // Get the test and body types
+    ExpTy testExpTy = transExp(e.test);
+    ExpTy bodyExpTy = transExp(e.body);
+    
+    // The test must be an integer
+    if (!testExpTy.ty.coerceTo(INT))
+      error(e.test.pos, "test should be of the type integer");
+    
+    // The body should not have a value
+    if (!bodyExpTy.ty.coerceTo(VOID))
+      error(e.test.pos, "a while loop should not have a value");
+    
+    // While loops are or the VOID type
+    return new ExpTy(null, VOID);
   }  
   
 }

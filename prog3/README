@@ -1,8 +1,3 @@
-Methods to implement:
+Poject 3 for Jonathan Hooper and Franshetta Hibbler
 
-transExp(Absyn.CallExp e)
-transExp(Absyn.AssignExp e)
-transExp(Absyn.ForExp e)
-transExp(Absyn.IfExp e)
-transExp(Absyn.SeqExp e)
-transExp(Absyn.WhileExp e)
+It type checks pretty well, but does have some problems with nested scopes in declaration lists that we couldn't figure out.

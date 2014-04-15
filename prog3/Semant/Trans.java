@@ -45,4 +45,18 @@ public abstract class Trans {
     return et.exp;
   }
   
+  protected Exp checkComparable(ExpTy et, int pos) {
+    Type type = et.ty.actual();
+    if (!(type instanceof Types.INT || type instanceof Types.STRING || type instanceof Types.NIL || type instanceof Types.RECORD || type instanceof Types.ARRAY))
+      error(pos, "type is not comparable");
+    return et.exp;
+  }
+
+  protected Exp checkOrderable(ExpTy et, int pos) {
+    Type type = et.ty.actual();
+    if (!(type instanceof Types.INT || type instanceof Types.STRING))
+      error(pos, "integer or string required");
+    return et.exp;
+  }
+  
 }
