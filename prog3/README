@@ -8,4 +8,4 @@ We moved the trans* methods from the Semant class into their own classes which a
 - TransExp: Translates Expressions with the transExp(Exp) method
 - TransDec: Translates Declarations with the transDec(Dec) method
 - TransVar: Translate Variables with the transVar(Var) method
-- TransTy: Translates Types with the transTy(Ty) method
+- TransTy: Translates Types with the transTy(Ty) mgit ethod
