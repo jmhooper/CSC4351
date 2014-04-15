@@ -1,3 +1,11 @@
 Poject 3 for Jonathan Hooper and Franshetta Hibbler
 
 It type checks pretty well, but does have some problems with nested scopes in declaration lists that we couldn't figure out.
+
+We moved the trans* methods from the Semant class into their own classes which are subclass of the class Trans.
+
+- Trans: is an abstract class that implements basic helper methods and other that are the same across its subclasses
+- TransExp: Translates Expressions with the transExp(Exp) method
+- TransDec: Translates Declarations with the transDec(Dec) method
+- TransVar: Translate Variables with the transVar(Var) method
+- TransTy: Translates Types with the transTy(Ty) method
