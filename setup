@@ -6,7 +6,7 @@ function download_files {
   if [ ! -d ./CS4351 ]; then rm -rf ./CS4351; fi
   
   # Use scp to download the files
-  scp -r ${LSUUSERNAME}@${LSUSERVER}:/classes/cs4351/cs4351_bau/pub ./CS4351
+  scp -r ${LSUUSERNAME}@${LSUSERVER}:/classes/cs4351/cs4351_bau/pub/ ./CS4351/
 }
 
 # Function with a decision contruct for downloading files from the classes server
