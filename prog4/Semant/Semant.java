@@ -16,6 +16,9 @@ public class Semant {
   }
 
   public void transProg(Absyn.Exp exp) {
+    // Find the escapes
+    FindEscape escaper = new FindEscape(exp);
+    
     transExp(exp);
   }
 
