@@ -1,9 +1,13 @@
 package Semant;
 import Translate.Exp;
+import Translate.Level;
+import Translate.Access;
+import Translate.AccessList;
 import Types.Type;
 import java.util.Hashtable;
-import Translate.Level;
 import FindEscape.FindEscape;
+import Symbol.Symbol;
+import Util.BoolList;
 
 public class Semant {
   Env env;
@@ -20,6 +24,10 @@ public class Semant {
     // Find the escapes
     FindEscape escaper = new FindEscape(exp);
     
+    // Add a new level
+    level = new Level(level, Symbol.symbol("transProg"), null);
+    
+    // Tranlate the exp
     transExp(exp);
   }
 
@@ -55,6 +63,15 @@ public class Semant {
 	  || a instanceof Types.STRING))
       error(pos, "integer or string required");
     return et.exp;
+  }
+  
+  private BoolList checkEscape(Absyn.FieldList list)
+  {
+    if(list == null) {
+      return null;
+    } else {
+      return new BoolList(list.escape, checkEscape(list.tail));
+    }
   }
 
   ExpTy transExp(Absyn.Exp e) {
@@ -305,7 +322,8 @@ public class Semant {
     ExpTy hi = transExp(e.hi);
     checkInt(hi, e.hi.pos);
     env.venv.beginScope();
-    e.var.entry = new LoopVarEntry(INT);
+    Translate.Access access = level.allocLocal(e.var.escape);
+    e.var.entry = new LoopVarEntry(INT, access);
     env.venv.put(e.var.name, e.var.entry);
     Semant loop = new LoopSemant(env, level);
     ExpTy body = loop.transExp(e.body);
@@ -373,7 +391,8 @@ public class Semant {
       if (!init.ty.coerceTo(type))
 	error(d.pos, "assignment type mismatch");
     }
-    d.entry = new VarEntry(type);
+    Translate.Access access = level.allocLocal(d.escape);
+    d.entry = new VarEntry(type, access);
     env.venv.put(d.name, d.entry);
     return null;
   }
@@ -414,13 +433,14 @@ public class Semant {
         error(f.pos, "function redeclared");
       Types.RECORD fields = transTypeFields(new Hashtable(), f.params);
       Type type = transTy(f.result);
-      f.entry = new FunEntry(fields, type);
+      Level localLevel = new Level(level, f.name, checkEscape(f.params), f.leaf);
+      f.entry = new FunEntry(localLevel, fields, type);
       env.venv.put(f.name, f.entry);
     }
     // 2nd pass - handles the function bodies
     for (Absyn.FunctionDec f = d; f != null; f = f.next) {
       env.venv.beginScope();
-      putTypeFields(f.entry.formals);
+      putTypeFields(f.entry.formals, f.entry.level.formals);
       Semant fun = new Semant(env, f.entry.level);
       ExpTy body = fun.transExp(f.body);
       if (!body.ty.coerceTo(f.entry.result))
@@ -441,11 +461,11 @@ public class Semant {
     return new Types.RECORD(f.name, name, transTypeFields(hash, f.tail));
   }
 
-  private void putTypeFields (Types.RECORD f) {
+  private void putTypeFields (Types.RECORD f, AccessList list) {
     if (f == null)
       return;
-    env.venv.put(f.fieldName, new VarEntry(f.fieldType));
-    putTypeFields(f.tail);
+    env.venv.put(f.fieldName, new VarEntry(f.fieldType, list.head));
+    putTypeFields(f.tail, list.tail);
   }
 
   Type transTy(Absyn.Ty t) {
