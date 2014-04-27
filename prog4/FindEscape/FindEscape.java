@@ -2,6 +2,7 @@ package FindEscape;
 
 public class FindEscape {
   Symbol.Table escEnv = new Symbol.Table(); // escEnv maps Symbol to Escape
+  Absyn.FunctionDec parentFunction = null; // For checking for leaf functions
 
   public FindEscape(Absyn.Exp e) { traverseExp(0, e);  }
 
@@ -82,31 +83,109 @@ public class FindEscape {
   
   // traverseExp methods
   void traverseExp(int depth, Absyn.ArrayExp e) { 
+    traverseExp(depth, e.size);
+    traverseExp(depth, e.init);
+  }
+  void traverseExp(int depth, Absyn.AssignExp e) { 
+    traverseVar(depth, e.var);
+    traverseExp(depth, e.exp);
+  }
+  void traverseExp(int depth, Absyn.BreakExp e) { 
+    // nothing to do here
+  }
+  void traverseExp(int depth, Absyn.CallExp e) { 
+    // If there is a parent function to this function, then it is not a leaf function
+    if (parentFunction != null) {
+      parentFunction.leaf = false;
+    }
+    
+    // Traverse the function arguments
+    for (Absyn.ExpList args = e.args; args != null; args = args.tail) {
+      traverseExp(depth, args.head);
+    }
+  }
+  void traverseExp(int depth, Absyn.ForExp e) { 
+    // Check the initial value
+    traverseExp(depth, e.var.init);
+    
+    // Add the var to a new scope.
+    escEnv.beginScope();
+    escEnv.put(e.var.name, new VarEscape(depth, e.var));
+    
+    // Now check the hi value and the body
+    traverseExp(depth, e.hi);
+    traverseExp(depth, e.body);
+    
+    // Throw out the old scope
+    escEnv.endScope();
     
   }
-  void traverseExp(int depth, Absyn.AssignExp e) {  }
-  void traverseExp(int depth, Absyn.BreakExp e) {  }
-  void traverseExp(int depth, Absyn.CallExp e) {  }
-  void traverseExp(int depth, Absyn.ForExp e) {  }
-  void traverseExp(int depth, Absyn.IfExp e) {  }
-  void traverseExp(int depth, Absyn.IntExp e) {  }
-  void traverseExp(int depth, Absyn.LetExp e) {  }
-  void traverseExp(int depth, Absyn.NilExp e) {  }
-  void traverseExp(int depth, Absyn.OpExp e) {  }
-  void traverseExp(int depth, Absyn.RecordExp e) {  }
-  void traverseExp(int depth, Absyn.SeqExp e) {  }
-  void traverseExp(int depth, Absyn.StringExp e) {  }
-  void traverseExp(int depth, Absyn.VarExp e) {  }
-  void traverseExp(int depth, Absyn.WhileExp e) {  }
+  void traverseExp(int depth, Absyn.IfExp e) { 
+    traverseExp(depth, e.test);
+    traverseExp(depth, e.thenclause);
+    if (e.elseclause != null) {
+      traverseExp(depth, e.elseclause);
+    }
+  }
+  void traverseExp(int depth, Absyn.IntExp e) { 
+    // nothing to do here
+  }
+  void traverseExp(int depth, Absyn.LetExp e) { 
+    // Begin a new scope
+    escEnv.beginScope();
+    
+    // Traverse the decs
+    for (Absyn.DecList dec = e.decs; dec != null; dec = dec.tail) {
+      traverseDec(depth, dec.head);
+    }
+    
+    // Traverse the body
+    traverseExp(depth, e.body);
+    
+    // Close out the scope
+    escEnv.endScope();
+  }
+  void traverseExp(int depth, Absyn.NilExp e) { 
+    // nothing to do here
+  }
+  void traverseExp(int depth, Absyn.OpExp e) { 
+    traverseExp(depth, e.left);
+    traverseExp(depth, e.right);
+  }
+  void traverseExp(int depth, Absyn.RecordExp e) { 
+    // Check each of the record's fields
+    for (Absyn.FieldExpList field = e.fields; field != null; field = field.tail) {
+      traverseExp(depth, field.init);
+    }
+  }
+  void traverseExp(int depth, Absyn.SeqExp e) { 
+    // Loop over and traverse each exp
+    for (Absyn.ExpList expList = e.list; expList != null; expList = expList.tail) {
+      traverseExp(depth, expList.head);
+    }
+  }
+  void traverseExp(int depth, Absyn.StringExp e) { 
+    // nothing to do here
+  }
+  void traverseExp(int depth, Absyn.VarExp e) { 
+    traverseVar(depth, e.var);
+  }
+  void traverseExp(int depth, Absyn.WhileExp e) { 
+    traverseExp(depth,e.test);
+    traverseExp(depth,e.body);
+  }
   
   // traverseDec methods
   void traverseDec(int depth, Absyn.FunctionDec d) { 
-    // Entering a function, so bump up the depth and start a new escEnv
+    // Entering a function, so bump up the depth and save the old parent function
+    Absyn.FunctionDec oldParentFunction = parentFunction;
     depth = depth + 1;
     
     // Loop through the functions
     for (Absyn.FunctionDec function = d; function != null; function = function.next) {
-      // Start a new escEnv scope for this function
+      
+      // Load the new parent function and create a new escEnv scope for this function
+      parentFunction = function;
       escEnv.beginScope();
       
       // Loop throug the params
@@ -120,13 +199,16 @@ public class FindEscape {
       // Throw out the escEnv scope for this function
       escEnv.endScope();
     }
+    
+    // Reset the parent function
+    parentFunction = oldParentFunction;
   }
   void traverseDec(int depth, Absyn.TypeDec d) { 
     // don't need to worry about type decs
   }
   void traverseDec(int depth, Absyn.VarDec d) { 
     // Traverse the var's initial value
-    traverseExp(d.init);
+    traverseExp(depth, d.init);
     
     // Add the new var to the escEnv
     escEnv.put(d.name, new VarEscape(depth, d));
