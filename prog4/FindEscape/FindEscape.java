@@ -63,12 +63,27 @@ public class FindEscape {
   }
   
   // traverseVar methods
-  void traverseVar(int depth, Absyn.FieldVar v) {  }
-  void traverseVar(int depth, Absyn.SimpleVar v) {  }
-  void traverseVar(int depth, Absyn.SubscriptVar v) {  }
+  void traverseVar(int depth, Absyn.FieldVar v) { 
+    traverseVar(depth, v.var);
+  }
+  void traverseVar(int depth, Absyn.SimpleVar v) { 
+    // Load the variable from the escape environment
+    Escape varEsc = (Escape)escEnv.get(v.name);
+    
+    // If the escape is at a shallower depth, then it needs to be escaped
+    if (varEsc != null && varEsc.depth < depth) {
+      varEsc.setEscape();
+    }
+  }
+  void traverseVar(int depth, Absyn.SubscriptVar v) { 
+		traverseVar(depth, v.var);
+	  traverseExp(depth, v.index);
+  }
   
   // traverseExp methods
-  void traverseExp(int depth, Absyn.ArrayExp e) {  }
+  void traverseExp(int depth, Absyn.ArrayExp e) { 
+    
+  }
   void traverseExp(int depth, Absyn.AssignExp e) {  }
   void traverseExp(int depth, Absyn.BreakExp e) {  }
   void traverseExp(int depth, Absyn.CallExp e) {  }
@@ -85,7 +100,35 @@ public class FindEscape {
   void traverseExp(int depth, Absyn.WhileExp e) {  }
   
   // traverseDec methods
-  void traverseDec(int depth, Absyn.FunctionDec d) {  }
-  void traverseDec(int depth, Absyn.TypeDec d) {  }
-  void traverseDec(int depth, Absyn.VarDec d) {  }
+  void traverseDec(int depth, Absyn.FunctionDec d) { 
+    // Entering a function, so bump up the depth and start a new escEnv
+    depth = depth + 1;
+    
+    // Loop through the functions
+    for (Absyn.FunctionDec function = d; function != null; function = function.next) {
+      // Start a new escEnv scope for this function
+      escEnv.beginScope();
+      
+      // Loop throug the params
+      for (Absyn.FieldList param = function.params; param != null; param = param.tail) {
+        escEnv.put(param.name, new FormalEscape(depth, param));
+      }
+      
+      // Traverse the function body
+      traverseExp(depth, function.body);
+      
+      // Throw out the escEnv scope for this function
+      escEnv.endScope();
+    }
+  }
+  void traverseDec(int depth, Absyn.TypeDec d) { 
+    // don't need to worry about type decs
+  }
+  void traverseDec(int depth, Absyn.VarDec d) { 
+    // Traverse the var's initial value
+    traverseExp(d.init);
+    
+    // Add the new var to the escEnv
+    escEnv.put(d.name, new VarEscape(depth, d));
+  }
 }

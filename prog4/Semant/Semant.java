@@ -3,6 +3,7 @@ import Translate.Exp;
 import Types.Type;
 import java.util.Hashtable;
 import Translate.Level;
+import FindEscape.FindEscape;
 
 public class Semant {
   Env env;
