@@ -185,15 +185,9 @@ public class Semant {
       FunEntry f = (FunEntry)x;
       ExpList args = transArgs(e.pos, f.formals, e.args);
       if (f.level == null)
-	return new ExpTy(f.result.coerceTo(VOID)
-			 ? translate.ProcExp(e.func, args, level)
-			 : translate.FunExp(e.func, args, level),
-			 f.result);
+	      return new ExpTy(f.result.coerceTo(VOID) ? translate.ProcExp(e.func, args, level) : translate.FunExp(e.func, args, level), f.result);
       else
-	return new ExpTy(f.result.coerceTo(VOID)
-			 ? translate.ProcExp(f.level, args, level)
-			 : translate.FunExp(f.level, args, level),
-			 f.result);
+	      return new ExpTy(f.result.coerceTo(VOID) ? translate.ProcExp(f.level, args, level) : translate.FunExp(f.level, args, level), f.result);
     }
     error(e.pos, "undeclared function: " + e.func);
     return new ExpTy(translate.Error(), VOID);

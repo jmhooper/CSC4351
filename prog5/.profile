@@ -9,3 +9,8 @@ fi
 export PROG=chap7
 export TIGER=${CS4351}/tiger
 export CLASSPATH=.:..:${CS4351}/classes/${PROG}:${CS4351}/classes
+
+alias compile='javac /Users/Jonathan/Developer/CSC4351/Projects/prog5/*/*.java'
+alias parse='java Parse.Main test.tig'
+alias semant='java Semant.Main test.tig'
+alias translate='java Translate.Main test.tig'
