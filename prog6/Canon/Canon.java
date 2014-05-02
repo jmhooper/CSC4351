@@ -23,7 +23,7 @@ class ExpCall extends Tree.Stm {
     return call.kids();
   }
   public Tree.Stm build(Tree.ExpList kids) {
-    return new Tree.EXP(call.build(kids));
+    return new Tree.UEXP(call.build(kids));
   }
 }
 
@@ -39,7 +39,7 @@ class StmExpList {
 public class Canon {
 
   static boolean isNop(Tree.Stm a) {
-    return a instanceof Tree.EXP && ((Tree.EXP)a).exp instanceof Tree.CONST;
+    return a instanceof Tree.UEXP && ((Tree.UEXP)a).exp instanceof Tree.CONST;
   }
 
   static Tree.Stm seq(Tree.Stm a, Tree.Stm b) {
@@ -70,7 +70,7 @@ public class Canon {
       return reorder_stm(s);
   }
 
-  static Tree.Stm do_stm(Tree.EXP s) { 
+  static Tree.Stm do_stm(Tree.UEXP s) { 
     if (s.exp instanceof Tree.CALL)
       return reorder_stm(new ExpCall((Tree.CALL)s.exp));
     else
@@ -82,8 +82,8 @@ public class Canon {
       return do_stm((Tree.SEQ)s);
     else if (s instanceof Tree.MOVE)
       return do_stm((Tree.MOVE)s);
-    else if (s instanceof Tree.EXP)
-      return do_stm((Tree.EXP)s);
+    else if (s instanceof Tree.UEXP)
+      return do_stm((Tree.UEXP)s);
     else
       return reorder_stm(s);
   }
@@ -112,7 +112,7 @@ public class Canon {
   }
 
   static StmExpList nopNull
-  = new StmExpList(new Tree.EXP(new Tree.CONST(0)),null);
+  = new StmExpList(new Tree.UEXP(new Tree.CONST(0)),null);
 
   static StmExpList reorder(Tree.ExpList exps) {
     if (exps == null)

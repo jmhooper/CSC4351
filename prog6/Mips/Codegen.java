@@ -48,8 +48,8 @@ public class Codegen {
   void munchStm(Tree.Stm s) {
     if (s instanceof Tree.MOVE) 
       munchStm((Tree.MOVE)s);
-    else if (s instanceof Tree.EXP)
-      munchStm((Tree.EXP)s);
+    else if (s instanceof Tree.UEXP)
+      munchStm((Tree.UEXP)s);
     else if (s instanceof Tree.JUMP)
       munchStm((Tree.JUMP)s);
     else if (s instanceof Tree.CJUMP)
@@ -63,7 +63,7 @@ public class Codegen {
   void munchStm(Tree.MOVE s) {
   }
 
-  void munchStm(Tree.EXP s) {
+  void munchStm(Tree.UEXP s) {
     munchExp(s.exp);
   }
 
