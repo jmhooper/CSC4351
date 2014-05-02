@@ -54,8 +54,8 @@ public class Translate {
   private static Tree.Stm MOVE(Tree.Exp dst, Tree.Exp src) {
     return new Tree.MOVE(dst, src);
   }
-  private static Tree.Stm EXP(Tree.Exp exp) {
-    return new Tree.EXP(exp);
+  private static Tree.Stm UEXP(Tree.Exp exp) {
+    return new Tree.UEXP(exp);
   }
   private static Tree.Stm JUMP(Label target) {
     return new Tree.JUMP(target);
@@ -88,7 +88,7 @@ public class Translate {
   }
 
   public Exp Error() {
-    return new Ex(CONST(0));
+    return new Ex(CONST(666));
   }
 
   public Exp SimpleVar(Access access, Level level) {
@@ -108,7 +108,8 @@ public class Translate {
   }
 
   public Exp IntExp(int value) {
-    return Error();
+    // ints are nodes
+    return new Ex(CONST(value));
   }
 
   private java.util.Hashtable strings = new java.util.Hashtable();
@@ -139,10 +140,10 @@ public class Translate {
     return new Ex(CallExp(f, args, from));
   }
   public Exp ProcExp(Symbol f, ExpList args, Level from) {
-    return new Nx(EXP(CallExp(f, args, from)));
+    return new Nx(UEXP(CallExp(f, args, from)));
   }
   public Exp ProcExp(Level f, ExpList args, Level from) {
-    return new Nx(EXP(CallExp(f, args, from)));
+    return new Nx(UEXP(CallExp(f, args, from)));
   }
 
   public Exp OpExp(int op, Exp left, Exp right) {

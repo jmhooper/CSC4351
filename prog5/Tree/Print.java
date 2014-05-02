@@ -62,7 +62,7 @@ public class Print {
            prExp(s.src,d+1); say(")");
   }
 
-  void prStm(EXP s, int d) {
+  void prStm(UEXP s, int d) {
      indent(d); sayln("EXP("); prExp(s.exp,d+1); say(")"); 
   }
 
@@ -72,7 +72,7 @@ public class Print {
    else if (s instanceof JUMP) prStm((JUMP)s, d);
    else if (s instanceof CJUMP) prStm((CJUMP)s, d);
    else if (s instanceof MOVE) prStm((MOVE)s, d);
-   else if (s instanceof EXP) prStm((EXP)s, d);
+   else if (s instanceof UEXP) prStm((UEXP)s, d);
    else throw new Error("Print.prStm");
   }
 

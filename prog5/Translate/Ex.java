@@ -11,7 +11,7 @@ class Ex extends Exp {
     return exp;
   }
   Tree.Stm unNx() {
-    return new Tree.EXP(exp);
+    return new Tree.UEXP(exp);
   }
   Tree.Stm unCx(Label t, Label f) {
     // if the exp is a constant, emit JUMP statement.
