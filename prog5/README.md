@@ -1,8 +1,8 @@
 # Project 5
 
-### TODO
+### TODO ###
 
-### Translate.Translate
+##### Translate.Translate #####
 - ```java public Exp SimpleVar(Access access, Level level); ```
 - ```java public Exp FieldVar(Exp record, int index); ```
 - ```java public Exp SubscriptVar(Exp array, Exp index); ```
@@ -24,7 +24,7 @@
 - ```java public Exp TypeDec(); ```
 - ```java public Exp FunctionDec(); ```
 
-### Translate.IfThenElseExp
+##### Translate.IfThenElseExp #####
 
 - ```java Tree.Stm unCx(Label tt, Label ff); ```
 - ```java Tree.Exp unEx(); ```
