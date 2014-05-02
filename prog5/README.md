@@ -3,7 +3,9 @@
 ### TODO ###
 
 ##### Translate.Translate #####
-- ```java public Exp SimpleVar(Access access, Level level); ```
+- ```java
+public Exp SimpleVar(Access access, Level level);
+```
 - ```java public Exp FieldVar(Exp record, int index); ```
 - ```java public Exp SubscriptVar(Exp array, Exp index); ```
 - ```java public Exp NilExp(); ```
