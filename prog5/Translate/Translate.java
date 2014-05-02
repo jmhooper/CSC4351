@@ -301,7 +301,7 @@ public class Translate {
   }
 
   public Exp ForExp(Access i, Exp lo, Exp hi, Exp body, Label done) {
-    
+    return Error();
   }
 
   public Exp BreakExp(Label done) {
