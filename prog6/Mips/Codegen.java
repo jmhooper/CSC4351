@@ -211,7 +211,7 @@ public class Codegen {
     
     TempList operandList = L(left, L(right, null));
     
-    emit(new Assem.OPER(operation + " `d0, `s0,` s1", tempList, operandList));
+    emit(new Assem.OPER(operation + " `d0, `s0,`s1", tempList, operandList));
     
     return temp;
   }
