@@ -72,7 +72,7 @@ public class Codegen {
 
   void munchStm(Tree.JUMP s) {
     LabelList targets = s.targets;
-    emit(new Assem.OPER("j " + targets.head.toString(), null, null, targets));
+    emit(new Assem.OPER("j " + targets.head, null, null, targets));
   }
 
   private static String[] CJUMP = new String[10];
@@ -169,13 +169,13 @@ public class Codegen {
 
   Temp munchExp(Tree.BINOP e) {
     Temp temp = new Temp();
-    TempList tempList = new TempList(temp, null);
+    TempList tempList = L(temp);
     String operation = BINOP[e.binop];
     
     Temp left = munchExp(e.left);
     Temp right = munchExp(e.right);
     
-    TempList operandList = new TempList(left, new TempList(right, null));
+    TempList operandList = L(left, L(right, null));
     
     emit(new Assem.OPER(operation + " `d0,`s0,`s1", tempList, operandList));
     
@@ -189,7 +189,17 @@ public class Codegen {
   }
 
   Temp munchExp(Tree.CALL s) {
-    throw new Error("Codegen.munchExp(Tree.CALL) is unimplemented");
+    if (s.func instanceof Tree.NAME) {
+      return munchExp(s, (Tree.NAME) s.func);
+    }
+    emit(OPER("jal `d0 `s0", frame.calldefs, L(munchExp(s.func), munchArgs(0, s.args))));
+    return frame.V0;
+  }
+  
+  Temp munchExp(Tree.CALL s, Tree.NAME name) {
+    String label = name.label.toString();
+    emit(OPER("jal " + name,  frame.calldefs, munchArgs(0, s.args)));
+    return frame.V0;
   }
 
   private TempList munchArgs(int i, Tree.ExpList args) {
