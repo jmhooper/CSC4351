@@ -257,8 +257,18 @@ public class Codegen {
   /* ########## MEM ########## */
 
   Temp munchExp(Tree.MEM e) {
+    if (e.exp instanceof Tree.CONST) {
+      return munchExp(e, (Tree.CONST)e.exp);
+    }
+    
     Temp t = new Temp();
     emit(OPER("lw `d0 (`s0)", L(t), L(munchExp(e.exp))));
+    return t;
+  }
+  
+  Temp munchExp(Tree.MEM e, Tree.CONST c) {
+    Temp t = new Temp();
+    emit(OPER("lw `d0 " + c.value, L(t), null));
     return t;
   }
   

@@ -4,7 +4,7 @@ SEQ(
  SEQ(
   MOVE(
    TEMP t33,
-   CONST 0),
+   CONST 1),
   MOVE(
    TEMP t34,
    CONST 3)),
@@ -36,7 +36,7 @@ SEQ(
 # After canonicalization: 
 MOVE(
  TEMP t33,
- CONST 0)
+ CONST 1)
 MOVE(
  TEMP t34,
  CONST 3)
@@ -67,7 +67,7 @@ MOVE(
 LABEL L1
 MOVE(
  TEMP t33,
- CONST 0)
+ CONST 1)
 MOVE(
  TEMP t34,
  CONST 3)
@@ -100,7 +100,7 @@ LABEL L0
 LABEL L1
 MOVE(
  TEMP t33,
- CONST 0)
+ CONST 1)
 MOVE(
  TEMP t34,
  CONST 3)
@@ -131,21 +131,22 @@ JUMP(
 LABEL L0
 # Instructions: 
 L1:
-move t33,$0
-li t38,3
-move t34,t38
-	addu t39 $sp tigermain_framesize
-	move $a0 t39
+li t38,1
+move t33,t38
+li t39,3
+move t34,t39
+	addu t40 $sp tigermain_framesize
+	move $a0 t40
 	move $a1 t33
 	move $a2 t34
-	jal Tree.NAME@78831e35
+	jal Tree.NAME@68346762
 move t33,$v0
-add t40,5, t33
-move t34,t40
-add t41,7,2
-move t33,t41
-add t42, t33,4
-move t34,t42
+add t41,5, t33
+move t34,t41
+add t42,7,2
+move t33,t42
+add t43, t33,4
+move t34,t43
 j L0
 L0:
 END tigermain
@@ -185,8 +186,8 @@ JUMP(
 LABEL L2
 # Instructions: 
 L3:
-add t43, t36,t37
-move $v0,t43
+add t44, t36,t37
+move $v0,t44
 j L2
 L2:
 END tigermain.add.0
