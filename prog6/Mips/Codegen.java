@@ -71,7 +71,8 @@ public class Codegen {
   }
 
   void munchStm(Tree.JUMP s) {
-    throw new Error("Codegen.munchStm(Tree.JUMP) is unimplemented");
+    LabelList targets = s.targets;
+    emit(new Assem.OPER("j " + targets.head.toString(), null, null, targets));
   }
 
   private static String[] CJUMP = new String[10];
@@ -167,7 +168,18 @@ public class Codegen {
   }
 
   Temp munchExp(Tree.BINOP e) {
-    throw new Error("Codegen.munchExp(Tree.BINOP) is unimplemented");
+    Temp temp = new Temp();
+    TempList tempList = new TempList(temp, null);
+    String operation = BINOP[e.binop];
+    
+    Temp left = munchExp(e.left);
+    Temp right = munchExp(e.right);
+    
+    TempList operandList = new TempList(left, new TempList(right, null));
+    
+    emit(new Assem.OPER(operation + " `d0,`s0,`s1", tempList, operandList));
+    
+    return temp;
   }
 
   Temp munchExp(Tree.MEM e) {
