@@ -71,10 +71,9 @@ L1:
 move t33,$0
 	addu t35 $sp tigermain_framesize
 	move $a0 t35
-	jal Tree.NAME@306f7492
+	jal Tree.NAME@7e5e5f92
 move t33,$v0
-li t37,5
-add t36,t33,t37
+add t36, t33,5
 move $v0,t36
 j L0
 L0:
@@ -107,8 +106,8 @@ JUMP(
 LABEL L2
 # Instructions: 
 L3:
-li t38,5
-move $v0,t38
+li t37,5
+move $v0,t37
 j L2
 L2:
 END tigermain.hello.0
