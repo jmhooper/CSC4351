@@ -9,13 +9,13 @@ class Main {
     for (Tree.StmList s = stms; s != null; s = s.tail) {
       Assem.InstrList i = f.codegen(s.head);
       if (last == null) {
-	if (first != null)
-	  throw new Error("Main.codegen");
-	first = last = i;
+	      if (first != null)
+	        throw new Error("Main.codegen");
+	      first = last = i;
       } else {
-	while (last.tail != null)
-	  last = last.tail;
-	last = last.tail = i;
+	      while (last.tail != null)
+	        last = last.tail;
+	      last = last.tail = i;
       }
     }
     return first;

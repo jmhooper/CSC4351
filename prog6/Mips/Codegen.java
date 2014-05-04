@@ -16,7 +16,7 @@ public class Codegen {
       last = last.tail = new Assem.InstrList(inst, null);
     else {
       if (ilist != null)
-	throw new Error("Codegen.emit");
+	      throw new Error("Codegen.emit");
       last = ilist = new Assem.InstrList(inst, null);
     }
   }
@@ -61,13 +61,17 @@ public class Codegen {
   }
 
   void munchStm(Tree.MOVE s) {
-  }
+    Temp to = munchExp(s.dst);
+		Temp from = munchExp(s.src);
+		emit(new Assem.MOVE("move `d0,`s0", to, from));
+	}
 
   void munchStm(Tree.UEXP s) {
-    munchExp(s.exp);
+    throw new Error("Codegen.munchStm(Tree.UEXP) is unimplemented");
   }
 
   void munchStm(Tree.JUMP s) {
+    throw new Error("Codegen.munchStm(Tree.JUMP) is unimplemented");
   }
 
   private static String[] CJUMP = new String[10];
@@ -85,9 +89,11 @@ public class Codegen {
   }
 
   void munchStm(Tree.CJUMP s) {
+    throw new Error("Codegen.munchStm(Tree.CJUMP) is unimplemented");
   }
 
   void munchStm(Tree.LABEL l) {
+    throw new Error("Codegen.munchStm(Tree.LABEL) is unimplemented");
   }
 
   Temp munchExp(Tree.Exp s) {
@@ -108,11 +114,20 @@ public class Codegen {
   }
 
   Temp munchExp(Tree.CONST e) {
-    return frame.ZERO;
+    if (e.value != 0) {
+      Temp temp = new Temp();
+      TempList list = L(temp);
+      emit(new Assem.OPER("li `d0," + e.value, list, null));
+      return temp;
+    } else {
+      return frame.ZERO;
+    }
   }
 
   Temp munchExp(Tree.NAME e) {
-    return frame.ZERO;
+    Temp temp = new Temp();
+    emit(OPER("la `d0 " + e.label.toString(), L(temp), null));
+    return temp;
   }
 
   Temp munchExp(Tree.TEMP e) {
@@ -143,23 +158,25 @@ public class Codegen {
     int shift = 0;
     if ((i >= 2) && ((i & (i - 1)) == 0)) {
       while (i > 1) {
-	shift += 1;
-	i >>= 1;
+	      shift += 1;
+	      i >>= 1;
       }
     }
     return shift;
   }
 
   Temp munchExp(Tree.BINOP e) {
-    return frame.ZERO;
+    throw new Error("Codegen.munchExp(Tree.BINOP) is unimplemented");
   }
 
   Temp munchExp(Tree.MEM e) {
-    return frame.ZERO;
+    Temp t = new Temp();
+    emit(OPER("lw `d0 (`s0)", L(t), L(munchExp(e.exp))));
+    return t;
   }
 
   Temp munchExp(Tree.CALL s) {
-    return frame.ZERO;
+    throw new Error("Codegen.munchExp(Tree.CALL) is unimplemented");
   }
 
   private TempList munchArgs(int i, Tree.ExpList args) {
