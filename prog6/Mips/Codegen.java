@@ -93,7 +93,8 @@ public class Codegen {
   }
 
   void munchStm(Tree.LABEL l) {
-    throw new Error("Codegen.munchStm(Tree.LABEL) is unimplemented");
+    String name = l.label.toString();
+    emit(new Assem.LABEL(name + ":", l.label));
   }
 
   Temp munchExp(Tree.Exp s) {
